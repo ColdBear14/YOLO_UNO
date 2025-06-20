@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YOLO_UNO</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Welcome to YOLO_UNO</h1>
+    <p>Control your devices and monitor sensors!</p>
+
+    <!-- Box cho các nút nhấn -->
+    <div class="box">
+        <h2>Control Box</h2>
+        <p>LED Single - <span id="state1">OFF</span> <button id="toggleButton1">Toggle</button> 
+        </p>
+        <p>LED RGB - <span id="state2">OFF</span> <button id="toggleButton2">Toggle</button> 
+        </p>
+        <p>Fan - <span id="state3">OFF</span> <button id="toggleButton3">Toggle</button> 
+        </p>
+    </div>
+
+    <!-- Box cho các giá trị cảm biến -->
+    <div class="box">
+        <h2>Sensor Box</h2>
+        <p>Temperature: <span id="sensorValue1">0</span></p>
+        <p>Humidity: <span id="sensorValue2">0</span></p>
+        <p>Lux: <span id="sensorValue3">0</span></p>
+        <p>Soil Humidity: <span id="sensorValue4">0</span></p>
+        <p>Distance: <span id="sensorValue5">0</span></p>
+
+    </div>
+
+    <script src="script.js"></script> <!-- Kết nối file JavaScript -->
+</body>
+</html>
