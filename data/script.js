@@ -13,9 +13,7 @@ const states = [false, false, false];
 const toggleButtons = [
     { id: 'toggleButton1', device: 1 },
     { id: 'toggleButton2', device: 2 },
-    { id: 'toggleButton3', device: 3 },
-    { id: 'toggleButton4', device: 4 }
-
+    { id: 'toggleButton3', device: 3 }
 ];
 
 function updateState(index) {

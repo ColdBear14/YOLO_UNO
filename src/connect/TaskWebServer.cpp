@@ -3,7 +3,7 @@
 String output1State = "off";
 String output2State = "off";
 String output3State = "off";
-String output4State = "off";
+
 
 // Khởi tạo máy chủ HTTP và WebSocket
 AsyncWebServer server(8080); // Máy chủ HTTP chạy trên cổng 80
@@ -45,13 +45,13 @@ void parseWebSocketMessage(AsyncWebSocketClient *client, const String &message) 
     String state = message.substring(quote1 + 1, quote2);
 
     if(device == 1) {
+        // Xử lý thiết bị A
         output1State = state;
     } else if(device == 2) {
+        // Xử lý thiết bị B
         output2State = state;
     } else if (device == 3) {
         output3State = state;
-    } else if (device == 4) {
-        output4State = state;
     }
 }
 
@@ -69,7 +69,6 @@ void initWebServer() {
         Serial.println(file.name());
         file = root.openNextFile();
     }
-  ElegantOTA.begin(&server);
 
   ws.onEvent(onEvent);
 
@@ -87,8 +86,6 @@ void initWebServer() {
 
 void loopWebServer() {
   ws.cleanupClients();
-  
-  ElegantOTA.loop();
 
   if (ws.availableForWriteAll()) {
         
@@ -98,15 +95,15 @@ void loopWebServer() {
     int soil = getValueSMS();
     int distance = getDistanceHC_SR04();
 
+    vTaskDelay(5000 / portTICK_PERIOD_MS);
+
     String jsonData = "{ \"temperature\": " + String(temperature) + 
                       ", \"humidity\": " + String(humidity) +
                       ", \"lux\": " + String(lux) + 
                       ", \"soil\": " + String(soil) + 
                       ", \"distance\": " + String(distance) + "}";
 
+    //   String jsonData = "{\"temperature\": " + String(temperature) + ", \"humidity\": " + String(humidity) + "}";
       ws.textAll(jsonData); // Gửi dữ liệu đến tất cả các client WebSocket
-
-    vTaskDelay(5000 / portTICK_PERIOD_MS);
-
   }
 }

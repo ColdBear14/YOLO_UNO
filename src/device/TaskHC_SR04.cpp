@@ -1,5 +1,29 @@
 #include "../include/TaskHC_SR04.h"
 
+void TaskHC_SR04(void *pvParameters)
+{
+    while (1)
+    {
+        getDistanceHC_SR04();
+        vTaskDelay(5000 / portTICK_PERIOD_MS);
+    }
+}
+
+void initHC_SR04()
+{
+    pinMode(HC_SR04_TRIG_PIN,OUTPUT);   // chân trig sẽ phát tín hiệu
+    pinMode(HC_SR04_ECHO_PIN,INPUT); 
+
+    xTaskCreate(
+        TaskHC_SR04,         // Function to implement the task
+        "TaskHC_SR04",      // Name of the task
+        2048,           // Stack size in words
+        NULL,           // Task input parameter
+        1,              // Priority of the task
+        NULL            // Task handle
+    );
+}
+
 int getDistanceHC_SR04()
 {
     unsigned long duration; // biến đo thời gian
@@ -18,30 +42,6 @@ int getDistanceHC_SR04()
     distance = int(duration/2/29.412);
     // publishData("DIS", String(distance));
     return distance;
-}
-
-void TaskHC_SR04(void *pvParameters)
-{
-    while (1)
-    {
-        getDistanceHC_SR04();
-        vTaskDelay(5000 / portTICK_PERIOD_MS);
-    }
-}
-
-void initHC_SR04()
-{
-    pinMode(HC_SR04_TRIG_PIN,OUTPUT);   // chân trig sẽ phát tín hiệu
-    pinMode(HC_SR04_ECHO_PIN,INPUT); 
-
-    // xTaskCreate(
-    //     TaskHC_SR04,         // Function to implement the task
-    //     "TaskHC_SR04",      // Name of the task
-    //     2048,           // Stack size in words
-    //     NULL,           // Task input parameter
-    //     1,              // Priority of the task
-    //     NULL            // Task handle
-    // );
 }
 
 

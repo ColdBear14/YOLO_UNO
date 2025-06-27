@@ -20,12 +20,12 @@ void initRelay()
 {
     pinMode(Relay_PIN, OUTPUT);
 
-    // xTaskCreate(
-    //     TaskRelay,   // Function to implement the task
-    //     "TaskRelay", // Name of the task
-    //     2048,        // Stack size in words
-    //     NULL,        // Task input parameter
-    //     1,           // Priority of the task
-    //     NULL         // Task handle
-    // );
+    xTaskCreate(
+        TaskRelay,   // Function to implement the task
+        "TaskRelay", // Name of the task
+        2048,        // Stack size in words
+        NULL,        // Task input parameter
+        1,           // Priority of the task
+        NULL         // Task handle
+    );
 }

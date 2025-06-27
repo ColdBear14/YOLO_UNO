@@ -1,40 +1,5 @@
 #include "../include/TaskLCD.h"
 
-void displayTemperatureAndHumidity(LiquidCrystal_I2C &lcd) {
-  for (int i = 0; i < 5; i++) {
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("Temp: " + String(getTemp()) + " C");
-    lcd.setCursor(0, 1);
-    lcd.print("Humid: " + String(getHum()) + "%");
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
-  }
-}
-
-void displayAnalogReadings(LiquidCrystal_I2C &lcd) {
-  for (int i = 0; i < 5; i++) {
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("A0:" + String(analogRead(1)));
-    lcd.setCursor(8, 0);
-    lcd.print("A1:" + String(analogRead(2)));
-    lcd.setCursor(0, 1);
-    lcd.print("A2:" + String(analogRead(3)));
-    lcd.setCursor(8, 1);
-    lcd.print("A3:" + String(analogRead(4)));
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
-  }
-}
-
-void displayDistance(LiquidCrystal_I2C &lcd) {
-  for (int i = 0; i < 5; i++) {
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("Distance: " + String(getDistanceHC_SR04()) + "cm");
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
-  }
-}
-
 void TaskLCD(void *pvParameters)
 {
   LiquidCrystal_I2C lcd(33, 16, 2); // set the LCD address to 0x27 for a 16 chars and 2 line display
@@ -49,15 +14,41 @@ void TaskLCD(void *pvParameters)
 
   while (1)
   {
-    displayTemperatureAndHumidity(lcd);
-    displayAnalogReadings(lcd);
-    displayDistance(lcd);
+    for(int i = 0; i < 5; i++) {
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("Temp: " + String(getTemp()) + " C");
+      lcd.setCursor(0, 1);
+      lcd.print("Humid: " + String(getHum()) + "%");
+      vTaskDelay(1000 / portTICK_PERIOD_MS); // Thêm delay ở đây
+    }
+
+    for(int i = 0; i < 5; i++) {
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("A0:" + String(analogRead(1)));
+      lcd.setCursor(8, 0);
+      lcd.print("A1:" + String(analogRead(2)));
+      lcd.setCursor(0, 1);
+      lcd.print("A2:" + String(analogRead(3)));
+      lcd.setCursor(8, 1);
+      lcd.print("A3:" + String(analogRead(4)));
+      vTaskDelay(1000 / portTICK_PERIOD_MS); // Thêm delay ở đây
+    }
+
+    for(int i = 0; i < 5; i++) {
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("Distance: " + String(getDistanceHC_SR04()) + "cm");
+      vTaskDelay(1000 / portTICK_PERIOD_MS); // Thêm delay ở đây
+
+    }
   }
 }
 
 void initLCD()
 {
-  Wire.begin(MY_SCL, MY_SDA);
+  // Wire.begin(MY_SCL, MY_SDA);
   xTaskCreate(
     TaskLCD,      // Function to implement the task
     "TaskLCD",   // Name of the task

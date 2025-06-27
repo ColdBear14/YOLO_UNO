@@ -30,4 +30,5 @@ void loop()
   }
   reconnectMQTT();
   loopWebServer();
+  vTaskDelay(100/ portTICK_PERIOD_MS);
 }
