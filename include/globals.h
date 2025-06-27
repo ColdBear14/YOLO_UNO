@@ -19,6 +19,7 @@
 #include <Ultrasonic.h>
 #include <Adafruit_NeoPixel.h>
 #include <LiquidCrystal_I2C.h>
+#include <ElegantOTA.h>
 
 ///
 #include "../src/connect/TaskWifi.h"

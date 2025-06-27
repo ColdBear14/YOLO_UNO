@@ -23,12 +23,12 @@ void initLED() {
   // Set initial states
   digitalWrite(LED_PIN, LOW);
 
-      xTaskCreate(
-      TaskLED,    // Function to implement the task
-      "TaskLED",  // Name of the task
-      4096,       // Stack size in words
-      NULL,        // Task input parameter
-      1,           // Priority of the task
-      NULL         // Task handle
-  );
+    xTaskCreate(
+    TaskLED,    // Function to implement the task
+    "TaskLED",  // Name of the task
+    4096,       // Stack size in words
+    NULL,        // Task input parameter
+    1,           // Priority of the task
+    NULL         // Task handle
+    );
 }

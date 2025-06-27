@@ -22,12 +22,12 @@ int getLux() {
 
 void initLUX()
 {
-    xTaskCreate(
-      TaskLUX,    // Function to implement the task
-      "TaskLUX",  // Name of the task
-      4096,       // Stack size in words
-      NULL,        // Task input parameter
-      1,           // Priority of the task
-      NULL         // Task handle
-  );
+//     xTaskCreate(
+//       TaskLUX,    // Function to implement the task
+//       "TaskLUX",  // Name of the task
+//       4096,       // Stack size in words
+//       NULL,        // Task input parameter
+//       1,           // Priority of the task
+//       NULL         // Task handle
+//   );
 }

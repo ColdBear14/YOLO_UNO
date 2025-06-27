@@ -22,12 +22,12 @@ int getValueSMS()
 
 void initSMS()
 {
-    xTaskCreate(
-        TaskSMS,      // Function to implement the task
-        "TaskSMS",    // Name of the task
-        2048,         // Stack size in words
-        NULL,         // Task input parameter
-        1,            // Priority of the task
-        NULL          // Task handle
-    );
+    // xTaskCreate(
+    //     TaskSMS,      // Function to implement the task
+    //     "TaskSMS",    // Name of the task
+    //     2048,         // Stack size in words
+    //     NULL,         // Task input parameter
+    //     1,            // Priority of the task
+    //     NULL          // Task handle
+    // );
 }

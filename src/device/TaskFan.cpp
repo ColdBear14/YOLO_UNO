@@ -19,12 +19,12 @@ void TaskFan(void *pvParameters)
 
 void initFan()
 {
-    xTaskCreate(
-      TaskFan,    // Function to implement the task
-      "TaskFan",  // Name of the task
-      4096,       // Stack size in words
-      NULL,        // Task input parameter
-      1,           // Priority of the task
-      NULL         // Task handle
-  );
+//     xTaskCreate(
+//       TaskFan,    // Function to implement the task
+//       "TaskFan",  // Name of the task
+//       4096,       // Stack size in words
+//       NULL,        // Task input parameter
+//       1,           // Priority of the task
+//       NULL         // Task handle
+//   );
 }
