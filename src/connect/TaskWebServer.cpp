@@ -28,7 +28,51 @@ void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType 
 }
 
 void parseWebSocketMessage(AsyncWebSocketClient *client, const String &message) {
-    // Xử lý tin nhắn từ client
+    // Xử lý tin nhắn từ client xử lý lệnh action
+    if (message.startsWith("{\"action\":\"device\"")) {
+        handleDevice(message);
+    }
+    else if (message.startsWith("{\"action\":\"email\"")) {
+        // Xử lý cấu hình email
+        handleEmail(message);
+    }
+    else if (message.startsWith("{\"action\":\"wifi\"")) {
+        // Xử lý cấu hình WiFi
+        handleWifiConfig(message);
+    }
+    else if (message.startsWith("{\"action\":\"mqtt\"")) {
+        // Xử lý cấu hình MQTT
+        handleMQTT(message);
+    }
+}
+
+void handleEmail(const String &message) {
+
+    StaticJsonDocument<200> doc;
+
+    // Deserialize the JSON string
+    DeserializationError error = deserializeJson(doc, message);
+
+    // Extract values from the JSON document
+    const char* email = doc["email"];
+    const char* enableEmail = doc["enableEmail"];
+    const char* threshold = doc["threshold"];
+    const char* emailMessage = doc["emailMessage"];
+
+    inputMessage = email; // Lưu email vào biến toàn cục
+    String emailContent = emailMessage;
+
+    queueEmailMessage(emailContent);
+
+    // Print extracted values for debugging
+    Serial.printf("Email: %s\n", email);
+    Serial.printf("Enable Email: %s\n", enableEmail);
+    Serial.printf("Threshold: %s\n", threshold);
+    Serial.printf("Email Message: %s\n", emailMessage);
+   
+}
+
+void handleDevice(const String &message){
     // Tìm vị trí của "device" và "state"
     int devicePos = message.indexOf("\"device\":");
     int statePos = message.indexOf("\"state\":");
@@ -55,9 +99,44 @@ void parseWebSocketMessage(AsyncWebSocketClient *client, const String &message) 
     }
 }
 
+void handleMQTT(const String &message) {
+    StaticJsonDocument<200> doc;
+
+    // Deserialize the JSON string
+    DeserializationError error = deserializeJson(doc, message);
+
+    // Extract values from the JSON document
+    const char* username = doc["username"];
+    const char* key = doc["key"];
+
+    IO_USERNAME = username; // Lưu username vào biến toàn cục
+    IO_KEY = key;           // Lưu key vào biến toàn cục
+
+    MQTT_STATE = 1;
+}
+
+void handleWifiConfig(const String &message) {
+    StaticJsonDocument<200> doc;
+
+    // Deserialize the JSON string
+    DeserializationError error = deserializeJson(doc, message);
+
+    // Extract values from the JSON document
+    const char* ssid = doc["ssid"];
+    const char* password = doc["password"];
+
+    // Lưu SSID và mật khẩu vào biến toàn cục
+    wifi_ssid = ssid;
+    wifi_password = password;
+
+    WIFI_STATE = 1;
+
+    InitWiFi(); // Gọi hàm khởi tạo WiFi với SSID và mật khẩu mới
+}
+
 void initWebServer() {
 
-  if (!LittleFS.begin())
+  if (!LittleFS.begin(true))
   {
       Serial.println("An Error has occurred while mounting LittleFS");
       return;
@@ -74,39 +153,66 @@ void initWebServer() {
   ws.onEvent(onEvent);
 
   server.addHandler(&ws);
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
+    server.on("/wifi", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(LittleFS, "/wifi.html", "text/html"); });
+    server.on("/device", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(LittleFS, "/index.html", "text/html"); });
-  server.on("/script.js", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(LittleFS, "/script.js", "application/javascript"); });
-  server.on("/styles.css", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(LittleFS, "/styles.css", "text/css"); });
+    server.on("/dashboard", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(LittleFS, "/dashboard.html", "text/html"); });
 
+    server.on("/js/Wifi.js", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(LittleFS, "/js/Wifi.js", "application/javascript"); });
+    server.on("/js/script.js", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(LittleFS, "/js/script.js", "application/javascript"); });
+    server.on("/js/chart.js", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(LittleFS, "/js/chart.js", "application/javascript"); });
+    server.on("/js/dashboard.js", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(LittleFS, "/js/dashboard.js", "application/javascript"); });
+            
+    server.on("/css/styles.css", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(LittleFS, "/css/styles.css", "text/css"); });
+    server.on("/css/all.min.css", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(LittleFS, "/css/all.min.css", "text/css"); });
+
+    server.on("/webfonts/fa-solid-900.woff2", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(LittleFS, "/webfonts/fa-solid-900.woff2", "font/woff2"); });
   server.begin();
   Serial.println("HTTP server started");
 }
+void webServerTask(void *pvParameters) {
+    initWebServer();
+    while (true) {
+        vTaskDelay(100 / portTICK_PERIOD_MS);
+    }
+}
 
-void loopWebServer() {
-  ws.cleanupClients();
-  
-  ElegantOTA.loop();
+void webSocketTask(void *pvParameters) {
+    while (true) {
+        ws.cleanupClients();
+        ElegantOTA.loop();
 
-  if (ws.availableForWriteAll()) {
-        
-    int temperature = getTemp(); // Lấy giá trị nhiệt độ từ DHT20
-    int humidity = getHum();     // Lấy giá trị độ ẩm từ DHT20
-    int lux = getLux();
-    int soil = getValueSMS();
-    int distance = getDistanceHC_SR04();
+        if (ws.availableForWriteAll()) {
+            // float temperature = getTemperature();
+            // float humidity = getHumidity();
+            // int lux = getLux();
+            // float soil = getSoilMoisture();
+            // int distance = getDistanceHC_SR04();
 
-    String jsonData = "{ \"temperature\": " + String(temperature) + 
-                      ", \"humidity\": " + String(humidity) +
-                      ", \"lux\": " + String(lux) + 
-                      ", \"soil\": " + String(soil) + 
-                      ", \"distance\": " + String(distance) + "}";
+            // String jsonData = "{ \"temperature\": " + String(temperature) +
+            //                   ", \"humidity\": " + String(humidity) +
+            //                   ", \"lux\": " + String(lux) +
+            //                   ", \"soil\": " + String(soil) +
+            //                   ", \"distance\": " + String(distance) + "}";
 
-      ws.textAll(jsonData); // Gửi dữ liệu đến tất cả các client WebSocket
+            // ws.textAll(jsonData);
 
-    vTaskDelay(5000 / portTICK_PERIOD_MS);
+            vTaskDelay(5000 / portTICK_PERIOD_MS);
+        }
+        vTaskDelay(100 / portTICK_PERIOD_MS);
+    }
+}
 
-  }
+void InitWebServer() {
+    xTaskCreate(webServerTask, "WebServerTask", 16384, NULL, 1, NULL);
+    xTaskCreate(webSocketTask, "WebSocketTask", 8192, NULL, 1, NULL);
 }

@@ -1,27 +1,31 @@
 #include "TaskWifi.h"
 
-constexpr char WIFI_SSID[] = "ACLAB";
-constexpr char WIFI_PASSWORD[] = "ACLAB2023";
+int WIFI_STATE = 0;
+
+String wifi_ssid = "";
+String wifi_password= "";
 
 void InitWiFi()
 {
-    Serial.println("Connecting to AP ...");
-    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-    while (WiFi.status() != WL_CONNECTED)
-    {
-        delay(500);
-        Serial.print(".");
-    }
-    Serial.println("Connected to AP");
+    if(WIFI_STATE == 1){
+        WiFi.begin(wifi_ssid.c_str(), wifi_password.c_str());
+        while (WiFi.status() != WL_CONNECTED)
+        {
+            vTaskDelay(500 / portTICK_PERIOD_MS);
+            Serial.print(".");
+        }
+    Serial.println("Connected to WiFI");
+    sendDataActionHistory("Wifi", "config successful");
+
+    }   
 }
 
 bool Wifi_reconnect()
 {
-    const wl_status_t status = WiFi.status();
-    if (status == WL_CONNECTED)
+    if (WiFi.status() != WL_CONNECTED)
     {
-        return true;
+        InitWiFi();
+        return WiFi.status() == WL_CONNECTED;
     }
-    InitWiFi();
     return true;
 }

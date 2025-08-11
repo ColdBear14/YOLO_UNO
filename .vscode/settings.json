@@ -56,7 +56,10 @@
         "new": "cpp",
         "streambuf": "cpp",
         "cinttypes": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "set": "cpp",
+        "future": "cpp",
+        "variant": "cpp"
     },
     "cmake.ignoreCMakeListsMissing": true
 }

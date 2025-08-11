@@ -3,23 +3,36 @@
 void setup()
 {
   Serial.begin(115200);
+  InitAP();
+
   InitWiFi();
-  initMQTT();
-  initWebServer();
+
+  // initMQTT();
+  // InitMQTTTask();
+
+  InitWebServer();
+
+  // InitMail();
+
+  // InitGS();
+  // setupGSLoop();
 
   initDHT20();
-  initLCD();
-  initLED();
+  // initLCD();
+  // initLED();
 
-  initRGB();
-  initRelay();
-  initFan();
+  // initRGB();
+  // initRelay();
+  // initFan();
 
   // initPIR();
 
-  initLUX();
-  initHC_SR04();
-  initSMS();
+  // initLUX();
+  // initHC_SR04();
+  // initSMS();
+  
+  // InitRS485();
+
 }
 
 void loop()
@@ -28,6 +41,6 @@ void loop()
   {
     return;
   }
-  reconnectMQTT();
-  loopWebServer();
+
+
 }

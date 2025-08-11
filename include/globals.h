@@ -8,23 +8,34 @@
 
 
 // include libraries
+#include <HTTPClient.h>
+#include <Arduino.h>
 #include <Wire.h>
 #include <WiFi.h>
 #include <ESPAsyncWebServer.h>
+#include <AsyncTCP.h>
 #include "FS.h"
 #include <LittleFS.h>
 #include <DHT20.h>
 #include <PubSubClient.h>
-// #include <WebServer.h>
+#include "NTPClient.h"
 #include <Ultrasonic.h>
 #include <Adafruit_NeoPixel.h>
 #include <LiquidCrystal_I2C.h>
 #include <ElegantOTA.h>
 
+#include <ArduinoJson.h>
+#include <WiFiClientSecure.h>
+
+#include <ESP_Mail_Client.h>
+
 ///
 #include "../src/connect/TaskWifi.h"
 #include "../src/connect/TaskMQTT.h"
 #include "../src/connect/TaskWebServer.h"
+#include "../src/connect/TaskAP.h"
+#include "../src/connect/TaskMail.h"
+#include "../src/connect/TaskMongo.h"
 
 #include "../src/include/TaskDHT20.h"
 #include "../src/include/TaskPIR.h"
@@ -36,6 +47,13 @@
 #include "../src/include/TaskSMS.h"
 #include "../src/include/TaskLCD.h"
 #include "../src/include/TaskRelay.h"
+
+#include "../src/include/RS485.h"
+
+#define BAUD_RATE_2 9600
+
+#define RXD_RS485 43
+#define TXD_RS485 44
 
 #define delay_time 10000
 

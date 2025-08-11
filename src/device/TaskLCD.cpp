@@ -4,9 +4,9 @@ void displayTemperatureAndHumidity(LiquidCrystal_I2C &lcd) {
   for (int i = 0; i < 5; i++) {
     lcd.clear();
     lcd.setCursor(0, 0);
-    lcd.print("Temp: " + String(getTemp()) + " C");
+    lcd.print("Temp: " + String(getTempeDHT20()) + " C");
     lcd.setCursor(0, 1);
-    lcd.print("Humid: " + String(getHum()) + "%");
+    lcd.print("Humid: " + String(getHumDHT20()) + "%");
     vTaskDelay(1000 / portTICK_PERIOD_MS);
   }
 }
@@ -50,8 +50,8 @@ void TaskLCD(void *pvParameters)
   while (1)
   {
     displayTemperatureAndHumidity(lcd);
-    displayAnalogReadings(lcd);
-    displayDistance(lcd);
+    // displayAnalogReadings(lcd);
+    // displayDistance(lcd);
   }
 }
 
